@@ -9,6 +9,20 @@ Spring Security 프로젝트를 해보고 JWT를 이용한 새 프로젝트 진�
 [2023-11-14]
 user, manager, admin 권한 설정을 통해 각 ROLE에 맞는 페이지 제한 설정
 
+ - SecurityConfig
+   - @EnableWebSecurity : 활성화를 위한 어노테이션
+     스프링 시큐리티 필터가 스프링 필터체인에 등록 됨.
+   - 설정 이후 login 페이지가 시큐리티에 의해 낚아채지지 않음
+   - .and()
+     .formLogin()
+     .loginPage("/login");
+     위 세팅을 permitAll() 다음에 붙여주고 나니
+     권한이 필요한 다른 페이지로 이동 시도시에 login 페이지로 자동 이동 됨.
+
+ - WebMvcConfig
+   - 주의 점 : Mustache 임포트 시 아래 주소 꼭 확인
+     import org.springframework.boot.web.servlet.view.MustacheViewResolver;
+
 
 [2023-11-14] ERROR CODE
 

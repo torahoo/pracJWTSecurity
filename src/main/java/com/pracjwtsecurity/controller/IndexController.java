@@ -30,7 +30,11 @@ public class IndexController {
         return "admin";
     }
 
-    // 스프링 시큐리티가 해당 주소를 낚아채 리턴값이 안보임
+    /*  ==========================================
+        스프링 시큐리티가 해당 주소를 낚아채 리턴값이 안보임
+        ==> SecurityConfig 파일 생성 후 작동 안함
+        ==========================================
+     */
     @GetMapping("/login")
     public @ResponseBody String login(){
         return "login";
