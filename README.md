@@ -23,6 +23,10 @@ user, manager, admin 권한 설정을 통해 각 ROLE에 맞는 페이지 제한
    - 주의 점 : Mustache 임포트 시 아래 주소 꼭 확인
      import org.springframework.boot.web.servlet.view.MustacheViewResolver;
 
+ - Model
+   - User
+     - Timestamp는 java.sql이 갖고있는걸 쓰면 된다.
+
 
 [2023-11-14] ERROR CODE
 
