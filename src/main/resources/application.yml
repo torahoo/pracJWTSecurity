@@ -5,18 +5,22 @@ server:
       charset: utf-8
       enabled: true
       force: true
+  port: 9000
 
 spring:
+  # ============================= #
+  # ?? ?? ??? ?? ?? ??    #
+  main:
+    allow-circular-references: true
+  # ============================= #
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: mysql://localhost:3306/pracjwtsecurity_schema?serverTimezone-Asia/Seoul
+    url: jdbc:mysql://localhost:3306/pracjwtsecurity_schema
     username: practiceAccount
     password: 1234
-
-  mvc:
-    view:
-      prefix: /templates/
-      suffix: .mustache
+  config:
+    activate:
+      on-profile: default
 
   jpa:
     hibernate:
@@ -24,3 +28,5 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
