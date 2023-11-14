@@ -6,6 +6,9 @@ Mustache
 
 Spring Security 프로젝트를 해보고 JWT를 이용한 새 프로젝트 진행
 
+[2023-11-14]
+user, manager, admin 권한 설정을 통해 각 ROLE에 맞는 페이지 제한 설정
+
 
 [2023-11-14] ERROR CODE
 
