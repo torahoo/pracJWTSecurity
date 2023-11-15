@@ -5,6 +5,35 @@ MY SQL
 Mustache
 
 Spring Security 프로젝트를 해보고 JWT를 이용한 새 프로젝트 진행
+강의 : https://www.youtube.com/playlist?list=PL93mKxaRDidERCyMaobSLkvSPzYtIk0Ah
+
+ - 환경설정 [2023-11-14]
+ - 시큐리티 설정 [2023-11-14]
+ - 시큐리티 회원가입 [2023-11-14]
+ - 시큐리티 로그인 [2023-11-15]
+ - 시큐리티 권한 처리
+ - 구글 로그인 준비
+ - 구글 회원 프로필 정보 받아보기
+ - Authentication 객체가 가질수 있는 2가지 타입
+ - 구글 로그인 및 자동 회원가입 진행 완료
+ - 페이스북 로그인 완료
+ - 네이버 로그인 완료
+ - JWT를 이해하기 전 세션에 대해 알아보자
+ - JWT를 이해하기전 TCP에 대해서 알아보자
+ - JWT를 이해하기전 CIA에 대해서 알아보자
+ - JWT를 이해하기전 RSA에 대해서 알아보자
+ - JWT를 이해하기전 RFC문서란
+ - JWT 구조 이해
+ - JWT 프로젝트 세팅
+ - JWT를 위한 yml파일 세팅
+ - JWT를 위한 security 설정
+ - JWT Bearer 인증 방식
+ - JWT Filter 등록 테스트
+ - JWT 임시 토큰 만들어서 테스트
+ - JWT를 위한 로그인 시도
+ - 회원가입 및 JWT를 위한 강제 로그인 진행
+ - JWT 토큰 만들어서 응답하기
+ - JWT 토큰 서버 구축 완료
 
 [2023-11-14]
 user, manager, admin 권한 설정을 통해 각 ROLE에 맞는 페이지 제한 설정
@@ -26,6 +55,10 @@ user, manager, admin 권한 설정을 통해 각 ROLE에 맞는 페이지 제한
  - Model
    - User
      - Timestamp는 java.sql이 갖고있는걸 쓰면 된다.
+
+[2023-11-15] 
+
+    
 
 
 [2023-11-14] ERROR CODE
