@@ -15,9 +15,9 @@ spring:
   # ============================= #
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/pracjwtsecurity_schema
-    username: practiceAccount
-    password: 1234
+    url: ${spring.datasource.url}
+    username: ${spring.datasource.username}
+    password: ${spring.datasource.password}
   config:
     activate:
       on-profile: default
@@ -30,3 +30,15 @@ spring:
     show-sql: true
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
+
+# 구글 로그인을 위한 application.yml 설정 입니다.
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${google.client-id}
+            client-secret: ${google.client-secret}
+            scope:
+              - email
+              - profile

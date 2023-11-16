@@ -12,7 +12,7 @@ Spring Security 프로젝트를 해보고 JWT를 이용한 새 프로젝트 진�
  - 시큐리티 회원가입 [2023-11-14]
  - 시큐리티 로그인 [2023-11-15]
  - 시큐리티 권한 처리 [2023-11-16]
- - 구글 로그인 준비
+ - 구글 로그인 준비 [2023-11-16]
  - 구글 회원 프로필 정보 받아보기
  - Authentication 객체가 가질수 있는 2가지 타입
  - 구글 로그인 및 자동 회원가입 진행 완료
@@ -62,6 +62,20 @@ user, manager, admin 권한 설정을 통해 각 ROLE에 맞는 페이지 제한
 [2023-11-16]
 시큐리티 권한처리
 
+구글 로그인 준비
+ - outh와 관련되어 궁금한게 있으면 이전 강의 참고
+ - Google API console
+ - https://console.cloud.google.com/apis/dashboard?hl=ko&project=pracjwtsecurity&supportedpurview=project
+ - google api를 위한 새 프로젝트 생성
+ - 승인된 리디렉션 URI 설정 (http://localhost:9000/login/oauth2/code/google) : 사용자 인증 정보에서 진행
+ - Access 토큰을 얻기 위한 주소 (사용자의 민감한 정보등을 열람 혹은 가져올 수 있음)
+ - http://localhost:9000/login/oauth2/code 까지는 주소가 고정.
+   그 뒤에 붙이는 건 google이면 구글, facebook이면 페이스북 처럼 필요에 의해 붙인다.
+ - indexController에 따로 주소를 추가할 필요는 없다.
+ - 라이브러리 설치 : OAuth2 라이브러리 (OAuth-client)
+ - https://docs.spring.io/spring-security-oauth2-boot/docs/2.1.7.RELEASE/reference/html5/
+ - compile 'org.springframework.boot:spring-boot-starter-security'
+   compile 'org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.1.7.RELEASE'
 
 
 ERROR CODE
