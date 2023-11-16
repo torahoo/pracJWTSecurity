@@ -4,6 +4,8 @@ import com.pracjwtsecurity.model.User;
 import com.pracjwtsecurity.repository.UserRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -75,6 +77,28 @@ public class IndexController {
         userRepository.save(user);
 
         return "redirect:/loginForm";
+    }
+
+    /*
+    해당 URL은 ROLE_ADMIN만이 접근 가능해진다.
+    Config에 EnableGlobalMethodSecurity 어노테이션 기능 중
+    securedEnabled 으로 가능
+     */
+    @Secured("ROLE_ADMIN")
+    @GetMapping("/info")
+    public @ResponseBody String info() {
+        return "개인정보";
+    }
+
+    /*
+    sercure는 권한을 하나만 넣을때
+    PreAuthorize는 복수의 권한을 넣을때
+    PostAuthorize는 Secure가 나온뒤로 잘 쓰지 않음
+     */
+    @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
+    @GetMapping("/data")
+    public @ResponseBody String data() {
+        return "데이터정보";
     }
 
 }
