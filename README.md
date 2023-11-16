@@ -11,7 +11,7 @@ Spring Security 프로젝트를 해보고 JWT를 이용한 새 프로젝트 진�
  - 시큐리티 설정 [2023-11-14]
  - 시큐리티 회원가입 [2023-11-14]
  - 시큐리티 로그인 [2023-11-15]
- - 시큐리티 권한 처리
+ - 시큐리티 권한 처리 
  - 구글 로그인 준비
  - 구글 회원 프로필 정보 받아보기
  - Authentication 객체가 가질수 있는 2가지 타입
@@ -58,10 +58,11 @@ user, manager, admin 권한 설정을 통해 각 ROLE에 맞는 페이지 제한
 
 [2023-11-15] 
 
-    
 
 
-[2023-11-14] ERROR CODE
+ERROR CODE
+
+[2023-11-14] 
 
  - Access to DialectResolutionInfo cannot be null when 'hibernate.dialect' not set
    - database: mysql
@@ -75,3 +76,11 @@ user, manager, admin 권한 설정을 통해 각 ROLE에 맞는 페이지 제한
    - yml 세팅
    - 해결 안됨.
    - config를 통해 세팅 ==> viewResolver를 통해 세팅
+
+[2023-11-15] 
+
+ - 로그인 안되는 에러 발생
+   - 프론트에서 loginForm action이 아무것도 없었음.
+   - action = '/login' method = 'post'
+     를 붙여서 해결. SecurityConfig에서 /login url로 접속되면
+     스프링 부트 로그인이 자동으로 로그인을 해줌.
