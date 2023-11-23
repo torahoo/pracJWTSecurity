@@ -14,7 +14,7 @@ Spring Security 프로젝트를 해보고 JWT를 이용한 새 프로젝트 진�
  - 시큐리티 권한 처리 [2023-11-16]
  - 구글 로그인 준비 [2023-11-16]
  - 구글 회원 프로필 정보 받아보기 [2023-11-23]
- - Authentication 객체가 가질수 있는 2가지 타입
+ - Authentication 객체가 가질수 있는 2가지 타입 [2023-11-23] 20:17 까지 진행
  - 구글 로그인 및 자동 회원가입 진행 완료
  - 페이스북 로그인 완료
  - 네이버 로그인 완료
@@ -119,6 +119,52 @@ user, manager, admin 권한 설정을 통해 각 ROLE에 맞는 페이지 제한
      provider = "google"
      prividerId = "111128189196468219361"
 
+ - Authentication객체가 가질수 잇는 2가지 타입
+   - registrationId로 어떤 OAuth로 로그인 햇는지 확인 가능 : userRequest.getClientRegistration()
+   - 구글 로그인 버튼 클릭 ==> 구글 로그인 창 ==> 로그인을 완료 ==> code를 리턴 (OAuth-Client라이브러리) ==> AccessToken 요청
+     userRequest 정보 ==> loadUser함수 호출 ==> 구글로부터 회원 프로필 받아준다.
+     - super.loadUser(userRequest).getAttributes()
+   - PrincipalOauth2UserService에 OAuth2User oauth2User = super.loadUser(userRequest); 추가
+   - IndexContorller에 세션 정보를 확인하는 메서드 추가
+     @GetMapping("/test/login")
+     public @ResponseBody String loginTest(Authentication authentication) {
+     log.info("/test/login ==============================");
+     log.info("authentication : "+authentication.getPrincipal());
+     return "세션 정보 확인하기";
+     }
+   - result :
+     /test/login ==============================
+     authentication : com.pracjwtsecurity.config.auth.PrincipalDetails@53f1e8b6
+   - 메서드에 PrincipalDetails 추가
+   - 밑의 코드로 메서드 바꾸기
+     log.info("/test/login ==============================");
+     PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+     log.info("authentication : "+principalDetails.getUser());
+   - result :
+     /test/login ==============================
+     authentication : 
+     User(id=1, 
+          username=user, 
+          password=$2a$10$MpkAfJkTOjW9V6jJ8MyJ2uc5m5L1LrNPWbOLKPNWbEkXmdHFQ67nm, 
+          email=user@test.com, 
+          role=ROLE_USER, 
+          provider=null, 
+          providerId=null, 
+          createDate=2023-11-16 17:01:15.519)
+   - Authentication authentication ==> DI(의존성 주입)
+   - 메서드에 @AuthenticationPrincipal 추가
+   - @AuthenticationPrincipal UserDetails userDetails를 이용해 user 정보를 가져올 수 있다.
+     userDetails : user ==> 이 유저는 UserDetails 타입
+   - UserDetails 타입이 아닌 PrincipalDetails타입으로도 정보를 가져올 수 있다.
+     ==> PrincipalDetails로는 getUsername이 아닌 getUser가 가능해진다.
+   result : userDetails2 : User(id=1, 
+                                username=user, 
+                                password=$2a$10$MpkAfJkTOjW9V6jJ8MyJ2uc5m5L1LrNPWbOLKPNWbEkXmdHFQ67nm, 
+                                email=user@test.com, 
+                                role=ROLE_USER, 
+                                provider=null, 
+                                providerId=null, 
+                                createDate=2023-11-16 17:01:15.519)
 
 ERROR CODE
 
@@ -155,3 +201,19 @@ ERROR CODE
                @Autowired
                private PrincipalOauth2UserService principalOauth2UserService;
                하여 userService(principalOauth2UserService) 하면 해결한다.
+
+ - class org.springframework.security.oauth2.core.user.DefaultOAuth2User 
+   cannot be cast to class com.pracjwtsecurity.config.auth.PrincipalDetails 
+   (org.springframework.security.oauth2.core.user.DefaultOAuth2User is in unnamed module 
+   of loader 'app'; com.pracjwtsecurity.config.auth.PrincipalDetails is in unnamed module 
+   of loader org.springframework.boot.devtools.restart.classloader.RestartClassLoader @11838285)
+ - Class Cast ERROR (ClassCastException)
+ - IndexController / loginTest 메서드에서 userDetails객체가 PrincipalDetails로 캐스팅 되지 않아 생기는 오류
+   - 해결 :
+     PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+     위의 코드에서 Google로그인 시 OAuth로 인증하여 들어오는 로그인 이기에 PrincipalDetails로 캐스팅이 되지 않아
+     발생하는 문제이므로
+   - OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+     로 바꿔주도록 한다. ==> 정보를 꺼내 쓸때는 oAuth2User.getAttributes()를 사용한다.
+   - @AuthenticationPrincipal OAuth2User oauth 를 통해 oauth.getAttribute()를 사용해도
+     위의 정보와 동일하게 나온다.

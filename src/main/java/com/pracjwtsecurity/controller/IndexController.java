@@ -1,14 +1,18 @@
 package com.pracjwtsecurity.controller;
 
+import com.pracjwtsecurity.config.auth.PrincipalDetails;
 import com.pracjwtsecurity.model.User;
 import com.pracjwtsecurity.repository.UserRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +29,36 @@ public class IndexController {
     private UserRepository userRepository;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @GetMapping("/test/login")
+    public @ResponseBody String loginTest(
+            Authentication authentication,
+            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal PrincipalDetails userDetails2) {
+        log.info("/test/login ==============================");
+
+        /*
+        PrincipalDetails는 UserDetails를 implements했기 때문에
+        authentication이 PrincialDetails로도 다운 캐스팅 될 수 있다.
+         */
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+        log.info("authentication : "+principalDetails.getUser());
+
+        log.info("userDetails : "+userDetails.getUsername());
+        log.info("userDetails2 : "+userDetails2.getUser());
+        return "세션 정보 확인하기";
+    }
+
+    @GetMapping("/test/oauth/login")
+    public @ResponseBody String oAuthLoginTest(
+            Authentication authentication,
+            @AuthenticationPrincipal OAuth2User oauth) {
+        log.info("/test/oauth/login ==============================");
+        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        log.info("OAuth2User authentication : "+oAuth2User.getAttributes());
+        log.info("OAuth2User getAttributes : "+oauth.getAttributes());
+        return "OAuth 세션 정보 확인하기";
+    }
 
     @GetMapping({"","/"})
     public String index() {
