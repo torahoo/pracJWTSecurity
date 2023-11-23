@@ -1,4 +1,4 @@
-package com.pracjwtsecurity.auth;
+package com.pracjwtsecurity.config.auth;
 
 import com.pracjwtsecurity.model.User;
 import com.pracjwtsecurity.repository.UserRepository;

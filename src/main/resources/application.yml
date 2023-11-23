@@ -9,7 +9,7 @@ server:
 
 spring:
   # ============================= #
-  # ?? ?? ??? ?? ?? ??    #
+  # 순환 오류를 해결하기 위한 yml 설정 추가 (for TestCode)   #
   main:
     allow-circular-references: true
   # ============================= #

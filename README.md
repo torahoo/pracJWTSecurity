@@ -13,7 +13,7 @@ Spring Security 프로젝트를 해보고 JWT를 이용한 새 프로젝트 진�
  - 시큐리티 로그인 [2023-11-15]
  - 시큐리티 권한 처리 [2023-11-16]
  - 구글 로그인 준비 [2023-11-16]
- - 구글 회원 프로필 정보 받아보기
+ - 구글 회원 프로필 정보 받아보기 [2023-11-23]
  - Authentication 객체가 가질수 있는 2가지 타입
  - 구글 로그인 및 자동 회원가입 진행 완료
  - 페이스북 로그인 완료
@@ -77,6 +77,48 @@ user, manager, admin 권한 설정을 통해 각 ROLE에 맞는 페이지 제한
  - compile 'org.springframework.boot:spring-boot-starter-security'
    compile 'org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.1.7.RELEASE'
 
+[2023-11-23]
+ - 구글 로그인이 완료된 뒤의 후처리가 필요함.
+   1. 코드받기(인증 했다는 말) 
+   2. 엑세스 토큰(권한 부여) 
+   3. 사용자프로필 정보를 가져옴 
+   4-1. 그 정보를 토대로 회원가입을 자동으로 진행시키기도 함
+   4-2. (이메일, 전화번호, 이름, 아이디) 쇼핑몰 -> (집주소) /
+        백화점몰 -> (vip등급, 일반등급)
+        ==> 서비스 이용시 구글 로그인으로 가져오는 정보만으로 부족할 시
+        회원가입을 따로 진행시켜 필요한 정보를 더 받아야 한다.
+        구글 로그인 완료시 코드X (엑세스토큰 + 사용자프로필 정보O)
+
+ - log.info("userRequest getClientRegistration:" + userRequest.getClientRegistration());
+   - userRequest getClientRegistration:
+   ClientRegistration{registrationId='google', 
+   clientId='722336461687-otmm8jhfrvdfjbkiio09p2tpu0q55lj2.apps.googleusercontent.com', 
+   clientSecret='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', 
+   clientAuthenticationMethod=org.springframework.security.oauth2.core.ClientAuthenticationMethod@4fcef9d3, 
+   authorizationGrantType=org.springframework.security.oauth2.core.AuthorizationGrantType@5da5e9f3, 
+   redirectUri='{baseUrl}/{action}/oauth2/code/{registrationId}', 
+   scopes=[email, profile], 
+   providerDetails=org.springframework.security.oauth2.client.registration.ClientRegistration$ProviderDetails@27e1234d, 
+   clientName='Google'}
+ - log.info("userRequest getAccessToken:" + userRequest.getAccessToken());
+   - userRequest getAccessToken:org.springframework.security.oauth2.core.OAuth2AccessToken@fb049c5c
+ - log.info("super.loadUser(userRequest).getAttributes():" + super.loadUser(userRequest).getAttributes());
+   - super.loadUser(userRequest).getAttributes():
+   {sub=111128189196468219361, 
+   name=김일중, 
+   given_name=일중, 
+   family_name=김, 
+   picture=https://lh3.googleusercontent.com/a/ACg8ocLw6akNUca1Q4MJrLJryBl5T_VWlun0FFuVYPnt4d7W=s96-c, 
+   email=legokbs@gmail.com, 
+   email_verified=true, locale=ko}
+   - 로그인 시 사용할 정보 : 
+     username = sub ==> "google_111128189196468219361",
+     password = 암호화 ==> "암호화(겟인데어)"
+     email = email ==> "legokbs@gmail.com"
+     role = "ROLE_USER"
+     provider = "google"
+     prividerId = "111128189196468219361"
+
 
 ERROR CODE
 
@@ -102,3 +144,14 @@ ERROR CODE
    - action = '/login' method = 'post'
      를 붙여서 해결. SecurityConfig에서 /login url로 접속되면
      스프링 부트 로그인이 자동으로 로그인을 해줌.
+
+[2023-11-23] 
+ - SecurityConfig에 userService추가하고 ()안에 null값을 넣고 
+   실행시키니 서버가 오류를 내보냈다.
+ - Error creating bean with name 'springSecurityFilterChain' defined in class path resource
+   - 해결 방법 : PrincipalOauth2UserService 클라스를 추가하여
+               DefaultOAuth2UserService를 extends하여 
+               SecurityConfig에
+               @Autowired
+               private PrincipalOauth2UserService principalOauth2UserService;
+               하여 userService(principalOauth2UserService) 하면 해결한다.

@@ -1,4 +1,4 @@
-package com.pracjwtsecurity.auth;
+package com.pracjwtsecurity.config.auth;
 
 /*
 =============================================================
