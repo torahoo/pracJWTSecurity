@@ -14,7 +14,7 @@ Spring Security 프로젝트를 해보고 JWT를 이용한 새 프로젝트 진�
  - 시큐리티 권한 처리 [2023-11-16]
  - 구글 로그인 준비 [2023-11-16]
  - 구글 회원 프로필 정보 받아보기 [2023-11-23]
- - Authentication 객체가 가질수 있는 2가지 타입 [2023-11-23] 20:17 까지 진행
+ - Authentication 객체가 가질수 있는 2가지 타입 [2023-11-23] 20:17 까지 진행 / [2023-11-24]
  - 구글 로그인 및 자동 회원가입 진행 완료
  - 페이스북 로그인 완료
  - 네이버 로그인 완료
@@ -165,6 +165,27 @@ user, manager, admin 권한 설정을 통해 각 ROLE에 맞는 페이지 제한
                                 provider=null, 
                                 providerId=null, 
                                 createDate=2023-11-16 17:01:15.519)
+
+[2023-11-24]
+ - Authentication 객체가 가질수 있는 2가지 타입
+ - 스프링 시큐리티 
+   - 시큐리티 세션 ==> Dependency Injection (DI)
+     - Authentication
+       - UserDetails ==> 일반 로그인
+       - OAuth2User ==> OAuth 로그인 (구글, 페이스북, 카카오 등등...)
+
+ - 일반적인 로그인 세션에 접근하기 위해선
+   @AuthenticationPrincipal PrincipalDetails(/UserDetails) userDetails (==> 일반 로그인)
+   @AuthenticationPrincipal OAuth2User oauth (==> 구글, 페이스북 등의 로그인)
+   로 객체를 받아와 써야한다.
+ - Controller 에서 각각의 로그인 타입마다 따로 써줘야한다.
+ - X라는 클래스를 만들어 UserDetails와 OAuth2User를 implements 받을 경우 X클래스를 이용하여 
+   두 객체를 다 쓸 수 있게 된다. ==> PrinciapDetails(userEntity) 타입으로 return 받으면 된다.
+ - ==> 결국 OAuth2User또한 PrincipalDetails로 같이 엮어버리면 둘다 편히 쓸 수 있다.
+
+
+
+
 
 ERROR CODE
 

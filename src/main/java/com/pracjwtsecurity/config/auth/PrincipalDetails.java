@@ -16,12 +16,14 @@ import com.pracjwtsecurity.model.User;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 @Data
-public class PrincipalDetails implements UserDetails {
+public class PrincipalDetails implements UserDetails, OAuth2User {
 
     private User user; //콤포지션
 
@@ -30,8 +32,8 @@ public class PrincipalDetails implements UserDetails {
     }
 
     /*
-    해당 User의 권한을 리턴
-     */
+        해당 User의 권한을 리턴
+         */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> collect = new ArrayList<>();
@@ -77,5 +79,20 @@ public class PrincipalDetails implements UserDetails {
         현재시간 - 로그인 시간 => 1년을 초과하면 return false
          */
         return true;
+    }
+
+    /*
+    =========================================
+    OAuth2User를 implements하여 생기는 Override
+    =========================================
+     */
+    @Override
+    public Map<String, Object> getAttributes() {
+        return null;
+    }
+
+    @Override
+    public String getName() {
+        return null;
     }
 }
