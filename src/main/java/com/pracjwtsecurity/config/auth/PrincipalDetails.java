@@ -26,14 +26,22 @@ import java.util.Map;
 public class PrincipalDetails implements UserDetails, OAuth2User {
 
     private User user; //콤포지션
+    private Map<String, Object> attributes;
 
+
+    // 일반 로그인 시 사용
     public PrincipalDetails(User user) {
         this.user = user;
     }
+    // OAuth 로그인 시 사용
+    public PrincipalDetails(User user, Map<String, Object> attributes) {
+        this.user = user;
+        this.attributes = attributes;
+    }
 
     /*
-        해당 User의 권한을 리턴
-         */
+    해당 User의 권한을 리턴
+    */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> collect = new ArrayList<>();
@@ -88,9 +96,16 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
      */
     @Override
     public Map<String, Object> getAttributes() {
-        return null;
+        return attributes;
     }
 
+    /*
+    ============================================
+    보통 return attributes.get("sub");
+    형식으로 사용하지만 잘 사용하지 않으므로 지금은
+    return null;을 해주도록 한다.
+    ============================================
+     */
     @Override
     public String getName() {
         return null;

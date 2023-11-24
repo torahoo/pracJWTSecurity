@@ -15,7 +15,7 @@ Spring Security 프로젝트를 해보고 JWT를 이용한 새 프로젝트 진�
  - 구글 로그인 준비 [2023-11-16]
  - 구글 회원 프로필 정보 받아보기 [2023-11-23]
  - Authentication 객체가 가질수 있는 2가지 타입 [2023-11-23] 20:17 까지 진행 / [2023-11-24]
- - 구글 로그인 및 자동 회원가입 진행 완료
+ - 구글 로그인 및 자동 회원가입 진행 완료 [2023-11-24]
  - 페이스북 로그인 완료
  - 네이버 로그인 완료
  - JWT를 이해하기 전 세션에 대해 알아보자
@@ -182,7 +182,49 @@ user, manager, admin 권한 설정을 통해 각 ROLE에 맞는 페이지 제한
  - X라는 클래스를 만들어 UserDetails와 OAuth2User를 implements 받을 경우 X클래스를 이용하여 
    두 객체를 다 쓸 수 있게 된다. ==> PrinciapDetails(userEntity) 타입으로 return 받으면 된다.
  - ==> 결국 OAuth2User또한 PrincipalDetails로 같이 엮어버리면 둘다 편히 쓸 수 있다.
+ - 정리 : 어떤 로그인 타입이냐에 따라 Controller에서 로그인 정보를 꺼내기 위해서 다른 타입을
+         써야하기에 불편함이 생기므로 기존 UserDetails타입을 PrincipalDetails로 썼던 것 처럼
+         OAuth2User 또한 implements하여 모든 로그인 정보를 PrincipalDetails로 꺼내 쓸 수 있게 한다.
 
+ - 구글 로그인 및 자동 회원가입 진행 완료
+   - PrincipalDetails 를 만든 이유
+     - Security가 가지고 있는 세션 정보 Authentication 객체 정보를 꺼내오기 위해
+       - OAuth2User 타입 ==> PrincipalDetails로 같이 엮어 일반 로그인, 구글 로그인 전부 여기서 꺼내기로 함.
+       - UserDetails 타입 ==> PrincipalDetails가 정보를 가지고 있어 이걸로 User정보를 꺼내면 됨.
+   - PrincipalOAuth2UserService에 강제로 회원가입을 진행하기
+     - 비밀번호 저장을 위해 
+       @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder; 추가
+   - User엔티티에 Builder 패턴을 통해 생성자 주입
+   - 해당 생성자를 통해 DB에 회원이 존재하는지 찾고 없으면 회원가입 진행
+   - return을 PricipalDetails로 바꿈. 
+     ==> OAuth, 일반 로그인 전부 PrincipalDetails 객체로 받을 수 있기에 Authentication으로 값을 꺼낼 수 있음.
+
+ - result : 
+ - 일반 로그인의 경우 : 
+   - principalDetails : 
+        User(   id=1, 
+                username=user, 
+                password=$2a$10$MpkAfJkTOjW9V6jJ8MyJ2uc5m5L1LrNPWbOLKPNWbEkXmdHFQ67nm, 
+                email=user@test.com, 
+                role=ROLE_USER, 
+                provider=null, 
+                providerId=null, createDate=2023-11-16 17:01:15.519)
+   - OAuth 로그인의 경우 :
+     principalDetails : 
+        User(   id=4, 
+                username=722336461687-otmm8jhfrvdfjbkiio09p2tpu0q55lj2.apps.googleusercontent.com_111128189196468219361, 
+                password=$2a$10$CuyYZ3hFXeQr8rgWiXkqi.K9w5FZMg9UlGcRBRvf/TjOrInihX9WW, 
+                email=legokbs@gmail.com, 
+                role=ROLE_USER, 
+                provider=722336461687-otmm8jhfrvdfjbkiio09p2tpu0q55lj2.apps.googleusercontent.com, 
+                providerId=111128189196468219361, 
+                createDate=2023-11-24 17:10:06.28)
+
+ - User 정보를 꺼내오기 위해선 (UserDetails) 처럼 다운 캐스팅이 필요하지만 @AuthenticationPrincipal를 이용하면
+   바로 꺼내올 수 있다.
+   ==> PrincipalOauth2UserService와 PrincipalDetailsService를 만든 이유
+       - 그냥으로도 loadUser와 loadUserByUsername은 작동하지만 궂이 만든 이유는
+         PrincipalDetails로 return하여 값을 받기 위함이다.
 
 
 
@@ -238,3 +280,9 @@ ERROR CODE
      로 바꿔주도록 한다. ==> 정보를 꺼내 쓸때는 oAuth2User.getAttributes()를 사용한다.
    - @AuthenticationPrincipal OAuth2User oauth 를 통해 oauth.getAttribute()를 사용해도
      위의 정보와 동일하게 나온다.
+
+[2023-11-24]
+ - No default constructir for entity : com.pracjwtsecurity.model.User
+   - 구글 로그인을 통해 강제 회원가입을 진행하던 중 @Builder 패턴을 이용해 생성자를 만들어
+     생긴 Error
+   - 해결 : User 엔티티에 @NoArgsConstructor 넣음으로서 해결
