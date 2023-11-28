@@ -16,7 +16,7 @@ Spring Security 프로젝트를 해보고 JWT를 이용한 새 프로젝트 진�
  - 구글 회원 프로필 정보 받아보기 [2023-11-23]
  - Authentication 객체가 가질수 있는 2가지 타입 [2023-11-23] 20:17 까지 진행 / [2023-11-24]
  - 구글 로그인 및 자동 회원가입 진행 완료 [2023-11-24]
- - 페이스북 로그인 완료
+ - 페이스북 로그인 완료 [2023-11-28] 8:08 까지 진행
  - 네이버 로그인 완료
  - JWT를 이해하기 전 세션에 대해 알아보자
  - JWT를 이해하기전 TCP에 대해서 알아보자
@@ -228,6 +228,24 @@ user, manager, admin 권한 설정을 통해 각 ROLE에 맞는 페이지 제한
 
 
 
+[2023-11-28]
+ - 페이스북 로그인 완료
+
+ - 페이스북 api 콘솔 접속
+ - 페이스북 로그인 후 내 앱 접속
+ - 앱 만들기로 앱 ID 생성
+ - 대시보드에서 이용사례 선택 하고 인증 및 계정 만들기 맞춤설정 선택, 빠른 시작 페이지로 이동 접속
+ - 웹 선택
+ - 사이트 URL 저장 (http://localhost:{설정 포트 번호})
+ - 완료 후 대시보드의 기본 설정 페이지로 이동
+ - application.yml 설정
+ - google과 똑같이 세팅
+ - 페이스북 앱ID 계정의 앱 ID와 시크릿 코드 가져오기 (profile ==> public_profile)
+ - scope 확인 방법
+   문서 - 페이스북 로그인 - 웹 - 사용자 로그인 (호출 샘플)
+
+ - loginForm에 페이스북 로그인 버튼 추가
+   (/oauth2/authorization/facebook 이렇게만 추가해도 라이브러리가 알아서 처리해 줌)
 
 ERROR CODE
 
@@ -238,7 +256,7 @@ ERROR CODE
      database-platform: org.hibernate.dialect.MySQL8InnoDBDialect
      application.yml에 위 구문 추가. 
    - 이 오류는 MySQL을 처리해줄수 있는 dialect의 값이 제대로 설정되지 않아서 나타나는 오류
-   - JPA에 값을 지정해주면 된다.
+     JPA에 값을 지정해주면 된다. 
 
  - templates에 있는 인덱스 페이지 보이지 않는 오류
    - https://bottom-to-top.tistory.com/38
