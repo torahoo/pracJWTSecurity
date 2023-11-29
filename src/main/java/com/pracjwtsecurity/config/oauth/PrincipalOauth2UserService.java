@@ -1,6 +1,9 @@
 package com.pracjwtsecurity.config.oauth;
 
 import com.pracjwtsecurity.config.auth.PrincipalDetails;
+import com.pracjwtsecurity.config.oauth.provider.FacebookUserInfo;
+import com.pracjwtsecurity.config.oauth.provider.GoogleUserInfo;
+import com.pracjwtsecurity.config.oauth.provider.OAuth2UserInfo;
 import com.pracjwtsecurity.model.User;
 import com.pracjwtsecurity.repository.UserRepository;
 import lombok.extern.log4j.Log4j2;
@@ -39,12 +42,36 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         log.info("PrincipalOAuth2User oauth2User getAttributes : "+oauth2User.getAttributes());
 
         //강제로 회원가입을 진행해볼 예정
-        String provider = userRequest.getClientRegistration().getClientId(); //google
-        String providerId = oauth2User.getAttribute("sub"); //google subId
+        /* ======================================================================== *
+            Google과 Facebook에 따라 providerId로 불러올 값이 다르기에 이를 구분해준다.
+         * ======================================================================== */
+        OAuth2UserInfo oAuth2UserInfo = null;
+        if(userRequest.getClientRegistration().getRegistrationId().equals("google")) {
+            log.info("구글 로그인 요청");
+            oAuth2UserInfo = new GoogleUserInfo(oauth2User.getAttributes());
+        } else if(userRequest.getClientRegistration().getRegistrationId().equals("facebook")) {
+            log.info("페이스북 로그인 요청");
+            oAuth2UserInfo = new FacebookUserInfo(oauth2User.getAttributes());
+        } else {
+            log.info("구글과 페이스북만 지원함");
+        }
+        String provider = oAuth2UserInfo.getProvider();
+        String providerId = oAuth2UserInfo.getProviderId();
         String username = provider+"_"+providerId; // google_google subId
         String password = bCryptPasswordEncoder.encode("겟인데어");
-        String email = oauth2User.getAttribute("email");
+        String email = oAuth2UserInfo.getEmail();
         String role = "ROLE_USER";
+
+
+        /* ======================================================================== *
+            위에서 구분을 하고 get으로 값을 가져올 수 있기에 밑은 주석처리한다.
+         * ======================================================================== */
+//        String provider = userRequest.getClientRegistration().getClientName(); //google
+//        String providerId = oauth2User.getAttribute("sub"); //google subId
+//        String username = provider+"_"+providerId; // google_google subId
+//        String password = bCryptPasswordEncoder.encode("겟인데어");
+//        String email = oauth2User.getAttribute("email");
+//        String role = "ROLE_USER";
 
         /*
         ===========================================================

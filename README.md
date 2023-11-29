@@ -247,6 +247,28 @@ user, manager, admin 권한 설정을 통해 각 ROLE에 맞는 페이지 제한
  - loginForm에 페이스북 로그인 버튼 추가
    (/oauth2/authorization/facebook 이렇게만 추가해도 라이브러리가 알아서 처리해 줌)
 
+[2023-11-29]
+ - 페이스북 로그인 완료
+ - 로그인 시 찍히는 값
+   - sub = null ==> attribute에서 페이스북은 sub가 아닌 id에 값이 들어가있어 sub는 null값이 나온다.
+   - (* 강의에선 provider로 userRequest.getClientRegistration().getClientId(); 를
+        사용하였지만 getClientName으로 해야 google이란 값이 나온다. *)
+
+ - oauth 패키지 안에 provider 패키지 생성
+ - OAuth2UserInfo interface 생성
+   - String getProviderId(); ==> sub
+     String getProvider(); ==> google / facebook
+     String getEmail(); ==> 회원 이메일
+     String getName(); ==> 회원 이름
+ - GoogleUserInfo 클래스 생성 후 OAuth2UserInfo implements
+ - 모든 메서드 override하고 생성자 생성
+ - 오버라이드 된 메서드 return값 각 값에 맞게 설정
+ - GoogleUserInfo 복사해서 Facebook으로 변경
+ - providerId return값 "sub" 에서 "id"로 변경
+ - provider "google" ==> "facebook"
+ - PrincipalOauth2UserService에서 두 로그인을 구분해줄 if문 추가
+ - 해당 값에 맞게 끔 변수들을 get으로 바꿔줌.
+
 ERROR CODE
 
 [2023-11-14] 
