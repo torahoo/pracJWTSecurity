@@ -16,7 +16,7 @@ Spring Security 프로젝트를 해보고 JWT를 이용한 새 프로젝트 진�
  - 구글 회원 프로필 정보 받아보기 [2023-11-23]
  - Authentication 객체가 가질수 있는 2가지 타입 [2023-11-23] 20:17 까지 진행 / [2023-11-24]
  - 구글 로그인 및 자동 회원가입 진행 완료 [2023-11-24]
- - 페이스북 로그인 완료 [2023-11-28] 8:08 까지 진행
+ - 페이스북 로그인 완료 [2023-11-28] 8:08 까지 진행 / [2023-11-29]
  - 네이버 로그인 완료
  - JWT를 이해하기 전 세션에 대해 알아보자
  - JWT를 이해하기전 TCP에 대해서 알아보자
@@ -304,3 +304,12 @@ ERROR CODE
    - 구글 로그인을 통해 강제 회원가입을 진행하던 중 @Builder 패턴을 이용해 생성자를 만들어
      생긴 Error
    - 해결 : User 엔티티에 @NoArgsConstructor 넣음으로서 해결
+
+[2023-11-29]
+ - 페이스북 로그인 시 
+ - Sorry, something went wrong.
+   We're working on getting this fixed as soon as we can.
+   라는 문구와 함께 오류 발생
+ - 추측 1 : 페이스북의 아이디 패스워드가 틀린것 같다.
+   - 해결 : https://www.inflearn.com/questions/1049529/facebook-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EB%B2%84%ED%8A%BC%EB%A7%8C%EB%93%A0-%ED%9B%84-error-sorry-%EB%B0%9C%EC%83%9D%EC%8B%9C
+   해당 사이트에서 해결방법을 찾음. 결국 인증 및 계정 만들기 ==> 수정 에서 Email 권한 추가해주어야 오류가 나지 않는다.
