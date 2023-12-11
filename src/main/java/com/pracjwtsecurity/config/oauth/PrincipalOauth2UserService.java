@@ -3,6 +3,7 @@ package com.pracjwtsecurity.config.oauth;
 import com.pracjwtsecurity.config.auth.PrincipalDetails;
 import com.pracjwtsecurity.config.oauth.provider.FacebookUserInfo;
 import com.pracjwtsecurity.config.oauth.provider.GoogleUserInfo;
+import com.pracjwtsecurity.config.oauth.provider.NaverUserInfo;
 import com.pracjwtsecurity.config.oauth.provider.OAuth2UserInfo;
 import com.pracjwtsecurity.model.User;
 import com.pracjwtsecurity.repository.UserRepository;
@@ -14,6 +15,8 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Log4j2
 @Service
@@ -52,8 +55,11 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         } else if(userRequest.getClientRegistration().getRegistrationId().equals("facebook")) {
             log.info("페이스북 로그인 요청");
             oAuth2UserInfo = new FacebookUserInfo(oauth2User.getAttributes());
+        } else if(userRequest.getClientRegistration().getRegistrationId().equals("naver")) {
+            log.info("네이버 로그인 요청");
+            oAuth2UserInfo = new NaverUserInfo((Map)oauth2User.getAttributes().get("response"));
         } else {
-            log.info("구글과 페이스북만 지원함");
+            log.info("구글과 페이스북과 네이버만 지원함");
         }
         String provider = oAuth2UserInfo.getProvider();
         String providerId = oAuth2UserInfo.getProviderId();
@@ -81,6 +87,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
          */
         User userEntity = userRepository.findByUsername(username);
         if(userEntity==null) {
+            log.info("최초 OAuth 로그인");
             userEntity = User.builder()
                     .username(username)
                     .password(password)

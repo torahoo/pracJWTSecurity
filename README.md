@@ -226,8 +226,6 @@ user, manager, admin 권한 설정을 통해 각 ROLE에 맞는 페이지 제한
        - 그냥으로도 loadUser와 loadUserByUsername은 작동하지만 궂이 만든 이유는
          PrincipalDetails로 return하여 값을 받기 위함이다.
 
-
-
 [2023-11-28]
  - 페이스북 로그인 완료
 
@@ -269,6 +267,63 @@ user, manager, admin 권한 설정을 통해 각 ROLE에 맞는 페이지 제한
  - PrincipalOauth2UserService에서 두 로그인을 구분해줄 if문 추가
  - 해당 값에 맞게 끔 변수들을 get으로 바꿔줌.
 
+[2023-12-11]
+ - 네이버 로그인 완료
+ - application.yml에 네이버를 위한 세팅
+ - 스프링 부트 oauth2 code client (참고 : https://blog.naver.com/getinthere/222064999924 )
+   - 스프링부트 시큐리티 OAuth2.0 (토큰방식)
+     - Facebook, Google, Naver 세션 방식
+     - 코드를 부여하는 방식 (Authorization Code Grant Type)
+ - client-id / client-secret까진 동일
+ - scope : - name, - email ( - profile_image 란 것이 있지만 지금은 쓰지 않으므로 넣지 않음)
+ - client-name : Naver
+ - authorization-grant-type : authorization_code (==> 코드를 부여하는 방식에 의한 type 지정)
+ - redirect-uri: http://localhost:9000/login/oauth2/code/naver
+   (http://localhost:9000/login/oauth2/code 여기까진 동일)
+   ==> 구글, 페이스북은 자동으로 해주기에 redirect-uri 넣어줄 필요 없음 
+   ==> 네이버는 provider로 기본 세팅이 안되었기에 직접 명시해줘야 함.
+ - 네이버로부터 정보 받아오기. (id, secret 등등...)
+   - 네이버 개발자 센터 들어가기
+   - application --> application 등록
+   - 애플리케이션 등록 (API 이용신청) --> 애플리케이션 이름 등록 (pracJWTSecurity)
+   - 사용 API 네이버 로그인 선택 후 이메일, 회원이름 선택
+   - 로그인 오픈 API 서비스 환경 세팅 (PC웹)
+     - 서비스 URL --> http://localhost:9000
+     - 네이버 아이디로 로그인 Callback URL --> http://localhost:9000/login/oauth2/code/naver
+   - 등록하기
+   - client-id / client-secret 가져오기.
+   - loginForm에 네이버 로그인 추가
+   - securityConfig에서 naver가 없기에 Error creating bean 에러가 뜬다.
+   - application.yml에 provider 구문 추가하여 해결 (에러 코드쪽 참고)
+   - Missing attribute 'response' in attributes 에러 발생 (에러 코드쪽 참고)
+   - PrincipalOauth2UserService에 네이버 구분하는 if문 추가 및 NaverUserInfo 생성
+   - naver response :
+     { resultcode=00,
+     message=success,
+     response={id=네이버ID, email=legokbs@naver.com, name=김태윤}}
+     로 나옴.
+   - PrincipalOauth2UserService에 Naver로 회원가입 진행
+     - oAuth2UserInfo = new NaverUserInfo((Map)oauth2User.getAttributes().get("response"))
+     - ==> Database의 USER에 값 제대로 들어오는것 확인
+     - reponse에 회원정보가 NaverUserInfo에 attributes로 들어가 값을 알아서 뽑아줌.
+     - url /user로 진입 
+       ==> principalDetails : 
+            User(
+            id=12, 
+            username=naver_Jw7wJ7LC_9p6Peg0_pm3LHaehzSY7Zoxc28Odou9XGQ, 
+            password=$2a$10$PP2DMF3zcp97mLeYNXZGlO.HcvYptdAXiPJ1Q3MVuAmDiYv5QKKWy, 
+            email=legokbs@gmail.com, 
+            role=ROLE_USER, 
+            provider=naver, 
+            providerId=Jw7wJ7LC_9p6Peg0_pm3LHaehzSY7Zoxc28Odou9XGQ, 
+            createDate=2023-12-11 18:29:41.448
+            )
+     - 정리 : 
+     스프링부트 기본 로그인 + OAuth2.0 로그인 = 통합해서 구현
+     웹 애플리케이션 만들면 됨.
+
+
+========================================================================================
 ERROR CODE
 
 [2023-11-14] 
@@ -335,3 +390,26 @@ ERROR CODE
  - 추측 1 : 페이스북의 아이디 패스워드가 틀린것 같다.
    - 해결 : https://www.inflearn.com/questions/1049529/facebook-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EB%B2%84%ED%8A%BC%EB%A7%8C%EB%93%A0-%ED%9B%84-error-sorry-%EB%B0%9C%EC%83%9D%EC%8B%9C
    해당 사이트에서 해결방법을 찾음. 결국 인증 및 계정 만들기 ==> 수정 에서 Email 권한 추가해주어야 오류가 나지 않는다.
+
+[2023-12-11]
+ - UnsatisfiedDependencyException
+   - 네이버 로그인을 추가하면서 securityConfig에 네이버 정보가 없기에 생기는 오류
+   - 해결 : 
+     - application.yml에 provider 구문 추가
+       - provider:
+           naver:
+           authorization-uri: http://nid.naver.com/oauth2.0/authorize
+           token-uri: https://nid.naver.com/oauth2.0/token
+           user-info-uri: https://openapi.naver.com/v1/nid/me
+           user-name-attribute: response #회원 정보를 json으로 받는데 response라는 키값으로 네이버가 리턴해줌.
+
+ - Missing attribute 'response' in attributes 에러 발생
+   - PrincipalOauth2UserService에서 oauth2User.getAttributes() 호출이 불가능해서 생기는 오류
+   - reponse라는 키값안에 정보가 들어있기에 이를 잘 써야함. 현재는 적용 안되있기에 nullPointException 발생
+   - PrincipalOauth2UserService에 코드 추가
+   - 해결 : 
+     - if 문으로 구글, 페이스북 구분하던 라인에 네이버 추가
+     - NaverUserInfo 생성
+     - PrincipaOauth2UserService에 다른 두개와는 달리 getAttributes로 꺼내는게 아니라
+       (Map)oauth2User.getAttributes().get("response") 로 값을 꺼내야 response 안의 
+       사용자 정보들을 가져올 수 있다.
